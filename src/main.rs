@@ -12,6 +12,7 @@ the company by department, sorted alphabetically.
 use std::collections::HashMap;
 use std::io;
 
+const DEPARTMENTS: [&str; 3] = ["Engineering", "Sales", "Finance"];
 
 struct DB {
     department: HashMap<String, Vec<String>>,
@@ -30,16 +31,16 @@ impl DB {
         self.department.values().cloned().flat_map(|d| d).collect()
     }
 
-    fn get_all_by_dept(&self, department: String) -> Vec<String> {
-        let dept = self.department.get(&department);
+    fn get_all_by_dept(&self, department: &str) -> Vec<String> {
+        let dept = self.department.get(department);
         let x: Vec<String> = Vec::new();
         dept.unwrap_or(&x).to_vec()
     }
 
-    fn seed_departments(&mut self, departments: Vec<String>) {
+    fn seed_departments(&mut self, departments: &[&str]) {
         self.department.clear();
         for d in departments {
-            self.department.insert(d, Vec::new());
+            self.department.insert(String::from(*d), Vec::new());
         }        
 
     }
@@ -47,7 +48,7 @@ impl DB {
 
 fn main() {
     let mut db = DB{ department:HashMap::new() };
-    db.seed_departments(departments());
+    db.seed_departments(&DEPARTMENTS);
     let mut err_msg: Option<String> = None;
     'menu: loop{
         clear_screen(&err_msg);
@@ -72,7 +73,7 @@ fn main() {
 }
 
 fn show_add_emp_menu(db: &mut DB) {
-    let departments = departments();
+    let departments = DEPARTMENTS;
     let mut err_msg: Option<String> = None;
     loop{
         clear_screen(&err_msg);
@@ -118,7 +119,7 @@ fn show_retrieve_menu(db: &DB) {
     loop{
         clear_screen(&err_msg);
         println!("\n**Retrieve Employees**\nChoose department:");
-        let departments = departments();
+        let departments = DEPARTMENTS;
         for (i, dep) in departments.iter().enumerate() {
             println!("\t{} {}", i+1, dep);
         }
@@ -144,17 +145,9 @@ fn show_retrieve_menu(db: &DB) {
         }
 
         let dep_name = departments.get(dep_num-1).unwrap();
-        println!("{:?}", db.get_all_by_dept(String::from(dep_name)));
+        println!("{:?}", db.get_all_by_dept(dep_name));
         press_enter_to_continue();
     }
-}
-
-fn departments() -> Vec<String> {
-    vec![
-        String::from("Engineering"), 
-        String::from("Sales"), 
-        String::from("Finance"),
-    ]
 }
 
 fn clear_screen(message: &Option<String>) {
