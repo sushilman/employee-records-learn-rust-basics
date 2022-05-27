@@ -19,10 +19,10 @@ struct DB {
 }
 
 impl DB {
-    fn add_emp(&mut self, department: String, name: String) {
-        let dept = self.department.get_mut(&department);
+    fn add_emp(&mut self, department: &str, name: &str) {
+        let dept = self.department.get_mut(department);
         if let Some(d) = dept {
-            d.push(name);
+            d.push(String::from(name));
         }
         println!("Updated list:\n{:?}", self.department)
     }
@@ -109,7 +109,7 @@ fn show_add_emp_menu(db: &mut DB) {
         read_input(&mut name);
 
         let dep_name = departments.get(dep_num-1).expect("department does not exist!");
-        add_employee(db, String::from(name.trim()), dep_name.to_string());
+        add_employee(db, name.trim(), dep_name);
         break;
     }
 }
@@ -171,7 +171,7 @@ fn press_enter_to_continue() {
     read_input(&mut wait)
 }
 
-fn add_employee(db: &mut DB, name: String, dep_name: String) {
+fn add_employee(db: &mut DB, name: &str, dep_name: &str) {
     println!("Adding {} to {}", name, dep_name);
     db.add_emp(dep_name, name);
     press_enter_to_continue();
